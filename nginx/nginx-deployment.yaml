@@ -25,3 +25,34 @@ spec:
       - name: nginx-config
         configMap:
           name: nginx-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: nginx-proxy
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: nginx
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: nginx-proxy
+data:
+  default.conf: |
+    server {
+      listen 80;
+      location / {
+        proxy_pass http://wordpress.wordpress.svc.cluster.local;
+      }
+    }
